@@ -3,13 +3,7 @@
     public class MainMenuState : IState
     {
         public string Id => nameof(MainMenuState);
-        public IState NextState { get; private set; }
-
-        public bool IsFinished()
-        {
-            return false;
-        }
-
+   
         public void OnEnter()
         {
             

@@ -1,41 +1,16 @@
-﻿using System;
+﻿using Mediation;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityGame.Mediation;
 
-namespace Temp
+namespace UnityGame.GameLogic
 {
-    public class MediationableObjectInfo
+    public class GameFlowMediator : MonoBehaviour, IMediator
     {
-        public object instance;
-        public MethodInfo method;
-
-        public MediationableObjectInfo(object instance, MethodInfo method)
-        {
-            this.instance = instance;
-            this.method = method;
-        }
-    }
-
-    public class TestMediator : MonoBehaviour, IMediator
-    {
-        [SerializeField] private Button _publish;
-
         private Dictionary<Type, List<MediationableObjectInfo>> _handlersInfos =
            new Dictionary<Type, List<MediationableObjectInfo>>();
-
-
-        private void Start()
-        {
-            _publish.onClick.AddListener(OnPublishClicked);
-        }
-
-        private void OnPublishClicked()
-        {
-            Publish(new TestMessage(5053));
-        }
 
         public void Publish<MsgType>(MsgType message) where MsgType : IMediatorMessage
         {
@@ -55,7 +30,7 @@ namespace Temp
             where MsgType : IMediatorMessage
         {
             Type msgType = typeof(MsgType);
-            MethodInfo method = handler.GetType().GetMethod(nameof(IMediatorMessageHandler<MsgType>.Handle));
+            MethodInfo method = handler.GetType().GetMethod(nameof(IMediatorMessageHandler<MsgType>.Handle), new Type[] { msgType });
             
             var handlerInfo = new MediationableObjectInfo(handler, method);
 

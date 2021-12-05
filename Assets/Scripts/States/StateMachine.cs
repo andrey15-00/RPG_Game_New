@@ -1,43 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityGame.GameLogic;
+using UnityGame.Mediation;
+using Zenject;
 
 namespace UnityGame.States
 {
-    public class StateMachine : MonoBehaviour
+    public class StateMachine : MonoBehaviour, IMediatorMessageHandler<StartGameMessage>, IMediatorMessageHandler<FinishGameMessage>
     {
-       // private List<IState> _states = new List<IState>();
         private IState _currentState;
+        private List<IState> _states = new List<IState>();
+        [Inject] private GameFlowMediator _gameFlowMediator;
 
         public void Init(List<IState> states, string startStateId)
         {
-            //_states = states;
+            _gameFlowMediator.SubscribeHandler<StateMachine, StartGameMessage>(this);
+            _gameFlowMediator.SubscribeHandler<StateMachine, FinishGameMessage>(this);
+
+            _states = states;
+
             IState startState = states.Find(state => state.Id == startStateId);
-            startState.OnEnter();
-            _currentState = startState;
+            ChangeState(startState);
+        }
+
+        public async void Handle(StartGameMessage message)
+        {
+            LogWrapper.Log("[StateMachine] Message received. Type: " + nameof(StartGameMessage));
+            await Task.Delay(1000);
+            ChangeState<GameplayState>();
+            _gameFlowMediator.Publish(new GameStartedMessage());
+        }
+
+        public async void Handle(FinishGameMessage message)
+        {
+            LogWrapper.Log("[StateMachine] Message received. Type: " + nameof(StartGameMessage));
+            await Task.Delay(1000);
+            ChangeState<MainMenuState>();
+            _gameFlowMediator.Publish(new GameFinishedMessage());
+        }
+
+        private void ChangeState<T>() where T: IState
+        {
+            if (_currentState != null)
+            {
+                _currentState.OnExit();
+            }
+
+            Type type = typeof(T);
+            IState state = _states.Find(state => state.GetType() == type);
+            state.OnEnter();
+
+            _currentState = state;
+
+            LogWrapper.Log("[StateMachine] State changed. Id: " + state.Id);
+        }
+
+        private void ChangeState<T>(T state) where T : IState
+        {
+            if (_currentState != null)
+            {
+                _currentState.OnExit();
+            }
+
+            state.OnEnter();
+
+            _currentState = state;
+
+            LogWrapper.Log("[StateMachine] State changed. Id: " + state.Id);
         }
 
         private void Update()
         {
-            if(_currentState == null)
+            if (_currentState == null)
             {
                 return;
             }
 
-            if (_currentState.IsFinished())
-            {
-                IState nextState = _currentState.NextState;
-                _currentState.OnExit();
-                _currentState = nextState;
-                _currentState.OnEnter();
-            }
-            else
-            {
-                _currentState.Tick(Time.deltaTime);
-            }
+            _currentState.Tick(Time.deltaTime);
         }
     }
 }
