@@ -1,19 +1,11 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace UnityGame.Items
 {
-    public class ItemList
+    [CreateAssetMenu(fileName = "ItemList", menuName = "Data/ItemList", order = 1)]
+    internal class ItemList : ScriptableObject
     {
-        private List<Item> _items = new List<Item>();
-
-        public void Add(Item item)
-        {
-            _items.Add(item);
-        }
-
-        public void RemoveAll(string id)
-        {
-            _items.RemoveAll(item => item.id == id);
-        }
+        public List<ItemDefinition> items;
     }
 }

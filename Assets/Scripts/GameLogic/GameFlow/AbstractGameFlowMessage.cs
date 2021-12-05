@@ -2,7 +2,7 @@
 
 namespace UnityGame.GameLogic
 {
-    public class GameStartedMessage : IMediatorMessage
+    public abstract class AbstractGameFlowMessage : IMediatorMessage
     {
         
     }

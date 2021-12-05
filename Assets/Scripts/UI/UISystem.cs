@@ -11,7 +11,7 @@ namespace UnityGame.UI
         private Dictionary<Type, UIAbstractScreen> _spawnedScreens = new Dictionary<Type, UIAbstractScreen>();
         private UIAbstractScreen _currentScreen;
 
-        public void ChangeScreen<T>() where T: UIAbstractScreen
+        public T ChangeScreen<T>() where T: UIAbstractScreen
         {
             if(_currentScreen != null)
             {
@@ -31,6 +31,8 @@ namespace UnityGame.UI
             _currentScreen.Show();
 
             LogWrapper.Log("[UISystem] Shown screen. Type: " + type);
+
+            return _currentScreen as T;
         }
 
         private T GetScreen<T>() where T : UIAbstractScreen

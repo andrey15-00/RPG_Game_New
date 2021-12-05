@@ -7,15 +7,16 @@ using UnityGame.Mediation;
 
 namespace UnityGame.GameLogic
 {
-    public class GameFlowMediator : MonoBehaviour, IMediator
+    public class Mediator<T> : IMediator<T> where T : IMediatorMessage
     {
         private Dictionary<Type, List<MediationableObjectInfo>> _handlersInfos =
            new Dictionary<Type, List<MediationableObjectInfo>>();
 
-        public void Publish<MsgType>(MsgType message) where MsgType : IMediatorMessage
+        public void Publish<MsgType>(MsgType message) where MsgType : T
         {
-            Type type = typeof(MsgType);
-            if (_handlersInfos.TryGetValue(type, out var infos))
+            Type msgType = typeof(MsgType);
+
+            if (_handlersInfos.TryGetValue(msgType, out var infos))
             {
                 object[] parameters = new object[1] { message };
                 foreach (var info in infos)
@@ -30,6 +31,7 @@ namespace UnityGame.GameLogic
             where MsgType : IMediatorMessage
         {
             Type msgType = typeof(MsgType);
+
             MethodInfo method = handler.GetType().GetMethod(nameof(IMediatorMessageHandler<MsgType>.Handle), new Type[] { msgType });
             
             var handlerInfo = new MediationableObjectInfo(handler, method);

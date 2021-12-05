@@ -19,7 +19,7 @@ namespace UnityGame.UI
             InitInternal();
         }
 
-        public void Show()
+        public virtual void Show()
         {
             _visual.gameObject.SetActive(true);
         }

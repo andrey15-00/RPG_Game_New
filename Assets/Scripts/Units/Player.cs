@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityGame.GameLogic;
+using UnityGame.Items;
+using UnityGame.Mediation;
 using UnityGame.Stats;
+using Zenject;
 
 namespace UnityGame.Units
 {
-    public class Player : MonoBehaviour, IUnit
+    public class Player : MonoBehaviour, IUnit,
+       IMediatorMessageHandler<GetItemsRequest>,
+       IMediatorMessageHandler<AddItemsRequest>
     {
-        public Dictionary<StatType, IStat> _stats;
+        private Dictionary<StatType, IStat> _stats;
+        private Inventory _inventory = new Inventory();
+        private IMediator<AbstractInventoryMessage> _inventoryMediator;
 
         public void Init(HashSet<IStat> stats)
         {
@@ -21,6 +29,31 @@ namespace UnityGame.Units
         public void ApplyStat(IStat stat)
         {
             _stats[stat.Type].Add(stat.Count);
+        }
+
+        public void Handle(GetItemsRequest message)
+        {
+            LogWrapper.Log("[Player] GetItemsRequest received. Items count: " + _inventory.GetDefinitions().Count);
+            _inventoryMediator.Publish(new GetItemsResponse(_inventory.GetDefinitions()));
+        }
+
+        public void Handle(AddItemsRequest message)
+        {
+            LogWrapper.Log("[Player] AddItemsRequest received. Items count: " + message.items.Count);
+            foreach(var definition in message.items)
+            {
+                _inventory.Add(definition);
+            }
+            _inventoryMediator.Publish(new GetItemsResponse(_inventory.GetDefinitions()));
+        }
+
+        [Inject]
+        private void Init(IMediator<AbstractInventoryMessage> inventoryMediator)
+        {
+            inventoryMediator.SubscribeHandler<Player, GetItemsRequest>(this);
+            inventoryMediator.SubscribeHandler<Player, AddItemsRequest>(this);
+
+            _inventoryMediator = inventoryMediator;
         }
     }
 }

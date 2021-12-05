@@ -10,18 +10,25 @@ namespace UnityGame.UI
     public class UIMainScreen : UIAbstractScreen, IMediatorMessageHandler<GameStartedMessage>
     {
         [SerializeField] private Button _play;
-        [Inject] private GameFlowMediator _gameFlowMediator;
+        [SerializeField] private Button _openInventory;
+        private IMediator<AbstractGameFlowMessage> _gameFlowMediator;
 
         protected override void InitInternal()
         {
             _play.onClick.AddListener(OnPlayClicked);
+            _openInventory.onClick.AddListener(OnOpenInventoryClicked);
         }
 
         [Inject]
-        private void Init(GameFlowMediator mediator)
+        private void Init(IMediator<AbstractGameFlowMessage> flowMediator)
         {
-            _gameFlowMediator = mediator;
-            mediator.SubscribeHandler<UIMainScreen, GameStartedMessage>(this);
+            _gameFlowMediator = flowMediator;
+            flowMediator.SubscribeHandler<UIMainScreen, GameStartedMessage>(this);
+        }
+
+        public void Handle(GameStartedMessage message)
+        {
+            _uiSystem.ChangeScreen<UIGameplayScreen>();
         }
 
         private void OnPlayClicked()
@@ -30,9 +37,9 @@ namespace UnityGame.UI
             _gameFlowMediator.Publish(new StartGameMessage());
         }
 
-        public void Handle(GameStartedMessage message)
+        private void OnOpenInventoryClicked()
         {
-            _uiSystem.ChangeScreen<UIGameplayScreen>();
+            _uiSystem.ChangeScreen<UIInventoryScreen>();
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UnityGame.UI
 {
-    [CreateAssetMenu(fileName = "ScreensList", menuName = "Data/ScreensList", order = 1)]
+    [CreateAssetMenu(fileName = "ScreenList", menuName = "Data/ScreenList", order = 1)]
     public class ScreenList : ScriptableObject
     {
         public List<UIAbstractScreen> screens;

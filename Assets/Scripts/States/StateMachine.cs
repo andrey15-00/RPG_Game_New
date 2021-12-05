@@ -12,7 +12,7 @@ namespace UnityGame.States
     {
         private IState _currentState;
         private List<IState> _states = new List<IState>();
-        [Inject] private GameFlowMediator _gameFlowMediator;
+        [Inject] private IMediator<AbstractGameFlowMessage> _gameFlowMediator;
 
         public void Init(List<IState> states, string startStateId)
         {
