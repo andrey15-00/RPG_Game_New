@@ -13,15 +13,15 @@ namespace UnityGame.UI
         [SerializeField] private TMP_Text _name;
         private Action<UIInventorySlot> _clicked;
 
-        public ItemDefinition ItemDefinition { get; private set; }
+        public Item Item { get; private set; }
 
-        public void Init(ItemDefinition definition, Action<UIInventorySlot> clicked = null)
+        public void Init(Item item, Action<UIInventorySlot> clicked = null)
         {
-            ItemDefinition = definition;
+            Item = item;
             _clicked = clicked;
             
-            _icon.sprite = definition.icon;
-            _name.text = definition.name;
+            _icon.sprite = item.Definition.icon;
+            _name.text = item.Definition.name;
         }
 
         public void OnPointerClick(PointerEventData eventData)

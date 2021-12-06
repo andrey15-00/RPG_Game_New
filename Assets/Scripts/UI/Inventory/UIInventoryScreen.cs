@@ -44,7 +44,7 @@ namespace UnityGame.UI
         }
 
         [Inject]
-        private void Init(IMediator<AbstractInventoryMessage> inventoryMediator)
+        private void Constructor(IMediator<AbstractInventoryMessage> inventoryMediator)
         {
             inventoryMediator.SubscribeHandler<UIInventoryScreen, GetItemsResponse>(this);
 
@@ -70,12 +70,12 @@ namespace UnityGame.UI
             _slots.Clear();
         }
 
-        private void SpawnSlots(List<ItemDefinition> definitions)
+        private void SpawnSlots(List<Item> items)
         {
-            foreach(var def in definitions)
+            foreach(var item in items)
             {
                 UIInventorySlot slot = Instantiate(_slotPrefab, _slotsParent);
-                slot.Init(def);
+                slot.Init(item);
                 _slots.Add(slot);
             }
         }

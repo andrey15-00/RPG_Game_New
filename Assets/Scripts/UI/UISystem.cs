@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 namespace UnityGame.UI
 {
@@ -41,13 +42,15 @@ namespace UnityGame.UI
             return _spawnedScreens[type] as T;
         }
 
+        [Inject] private Installer _installer;
         private T CreateScreen<T>() where T : UIAbstractScreen
         {
             Type type = typeof(T);
 
             T prefab = _screenPrefabs.screens.Find(screen=>screen.GetType() == type) as T;
 
-            T screen = Instantiate(prefab, _screensParent);
+            //T screen = Instantiate(prefab, _screensParent);
+            T screen = _installer.GetContainer().InstantiatePrefabForComponent<T>(prefab, _screensParent);
             screen.Init(this);
 
             return screen;

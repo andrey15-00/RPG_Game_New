@@ -9,12 +9,13 @@ namespace UnityGame.Spawning
     {
         [SerializeField] private Player _playerPrefab;
         [SerializeField] private Transform _spawnedUnitsParent;
+        [SerializeField] private Transform _playerPosition;
 
-        public Player SpawnPlayer(Vector3 position, Quaternion rotation)
+        public Player SpawnPlayer()
         {
             Player player = Instantiate(_playerPrefab, _spawnedUnitsParent);
 
-            player.transform.SetPositionAndRotation(position, rotation);
+            player.transform.SetPositionAndRotation(_playerPosition.position, Quaternion.identity);
 
             HashSet<IStat> stats = new HashSet<IStat>()
             {

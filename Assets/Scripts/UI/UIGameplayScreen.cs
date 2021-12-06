@@ -9,7 +9,7 @@ namespace UnityGame.UI
     public class UIGameplayScreen : UIAbstractScreen, IMediatorMessageHandler<GameFinishedMessage>
     {
         [SerializeField] private Button _goToMain;
-        [Inject] private GameFlowMediator _gameFlowMediator;
+        [Inject] private IMediator<AbstractGameFlowMessage> _gameFlowMediator;
 
 
         protected override void InitInternal()
@@ -18,15 +18,16 @@ namespace UnityGame.UI
         }
 
         [Inject]
-        private void Init(GameFlowMediator mediator)
+        private void Constructor(IMediator<AbstractGameFlowMessage> mediator)
         {
             _gameFlowMediator = mediator;
             mediator.SubscribeHandler<UIGameplayScreen, GameFinishedMessage>(this);
+            LogWrapper.Log("[UIGameplayScreen] Constructor called. ");
         }
 
         private void OnGoToMainClicked()
         {
-            LogWrapper.Log("[Gameplay] OnGoToMainClicked. ");
+            LogWrapper.Log("[UIGameplayScreen] OnGoToMainClicked. ");
             _uiSystem.ChangeScreen<UILoadingScreen>();
             _gameFlowMediator.Publish(new FinishGameMessage());
         }

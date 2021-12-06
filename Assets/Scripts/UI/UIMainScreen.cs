@@ -13,6 +13,10 @@ namespace UnityGame.UI
         [SerializeField] private Button _openInventory;
         private IMediator<AbstractGameFlowMessage> _gameFlowMediator;
 
+        private void Start()
+        {
+        }
+
         protected override void InitInternal()
         {
             _play.onClick.AddListener(OnPlayClicked);
@@ -20,7 +24,7 @@ namespace UnityGame.UI
         }
 
         [Inject]
-        private void Init(IMediator<AbstractGameFlowMessage> flowMediator)
+        private void Constructor(IMediator<AbstractGameFlowMessage> flowMediator)
         {
             _gameFlowMediator = flowMediator;
             flowMediator.SubscribeHandler<UIMainScreen, GameStartedMessage>(this);

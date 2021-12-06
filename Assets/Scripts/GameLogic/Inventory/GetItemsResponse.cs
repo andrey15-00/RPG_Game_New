@@ -5,9 +5,9 @@ namespace UnityGame.GameLogic
 {
     public class GetItemsResponse : AbstractInventoryMessage
     {
-        public List<ItemDefinition> items;
+        public List<Item> items;
 
-        public GetItemsResponse(List<ItemDefinition> items)
+        public GetItemsResponse(List<Item> items)
         {
             this.items = items;
         }

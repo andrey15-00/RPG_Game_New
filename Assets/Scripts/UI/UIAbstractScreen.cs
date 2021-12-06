@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Zenject;
 
 namespace UnityGame.UI
 {
@@ -10,6 +11,12 @@ namespace UnityGame.UI
         protected abstract void InitInternal();
 
         public void Init(UISystem uiSystem)
+        {
+            
+        }
+
+        [Inject]
+        private void Constructor(UISystem uiSystem)
         {
             if (_uiSystem != null)
                 return;

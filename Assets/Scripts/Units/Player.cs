@@ -33,18 +33,18 @@ namespace UnityGame.Units
 
         public void Handle(GetItemsRequest message)
         {
-            LogWrapper.Log("[Player] GetItemsRequest received. Items count: " + _inventory.GetDefinitions().Count);
-            _inventoryMediator.Publish(new GetItemsResponse(_inventory.GetDefinitions()));
+            LogWrapper.Log("[Player] GetItemsRequest received. Items count: " + _inventory.GetAll().Count);
+            _inventoryMediator.Publish(new GetItemsResponse(_inventory.GetAll()));
         }
 
         public void Handle(AddItemsRequest message)
         {
             LogWrapper.Log("[Player] AddItemsRequest received. Items count: " + message.items.Count);
-            foreach(var definition in message.items)
+            foreach(var item in message.items)
             {
-                _inventory.Add(definition);
+                _inventory.Add(item);
             }
-            _inventoryMediator.Publish(new GetItemsResponse(_inventory.GetDefinitions()));
+            _inventoryMediator.Publish(new GetItemsResponse(_inventory.GetAll()));
         }
 
         [Inject]

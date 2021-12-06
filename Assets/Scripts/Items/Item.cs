@@ -1,17 +1,23 @@
 
+using System;
+using UnityEngine;
+
 namespace UnityGame.Items
 {
+    [Serializable]
     public class Item
     {
-        public int count;
-        private ItemDefinition _definition;
+        [SerializeField] private int _count;
+        [SerializeField] private ItemDefinition _definition;
 
+        public int Count => _count;
         public string Id => _definition.id;
         public ItemDefinition Definition => _definition;
 
-        public Item(ItemDefinition definition)
+        public Item(ItemDefinition definition, int count = 1)
         {
             _definition = definition;
+            _count = count;
         }
     }
 }

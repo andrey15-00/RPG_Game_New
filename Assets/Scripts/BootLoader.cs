@@ -12,11 +12,12 @@ namespace Assets.Scripts
 {
     internal class BootLoader : MonoBehaviour
     {
-        [SerializeField] private UnitFactory _unitFactory;//TODO: testing
-
-
         [Inject]
-        private async void Init(UISystem uISystem, StateMachine stateMachine, IMediator<AbstractGameFlowMessage> gameFlowMediator)
+        private void Init(UISystem uISystem, 
+            StateMachine stateMachine, 
+            IMediator<AbstractGameFlowMessage> gameFlowMediator, 
+            LevelInitializer levelInitializer,
+            InteractablesSearcher interactablesSearcher)
         {
             LogWrapper.Log("[BootLoader] Started init.");
 
@@ -26,14 +27,10 @@ namespace Assets.Scripts
             {
                 new LoadingState(),
                 new MainMenuState(),
-                new GameplayState(),
+                new GameplayState(levelInitializer, interactablesSearcher),
             }, nameof(LoadingState));
 
-            await Task.Delay(1000);//TODO: test
-
             uISystem.ChangeScreen<UIMainScreen>();
-
-            _unitFactory.SpawnPlayer(Vector3.zero, Quaternion.identity);//TODO: testing
 
             LogWrapper.Log("[BootLoader] Finished init.");
         }

@@ -25,18 +25,16 @@ namespace UnityGame.States
             ChangeState(startState);
         }
 
-        public async void Handle(StartGameMessage message)
+        public void Handle(StartGameMessage message)
         {
             LogWrapper.Log("[StateMachine] Message received. Type: " + nameof(StartGameMessage));
-            await Task.Delay(1000);
             ChangeState<GameplayState>();
             _gameFlowMediator.Publish(new GameStartedMessage());
         }
 
-        public async void Handle(FinishGameMessage message)
+        public void Handle(FinishGameMessage message)
         {
             LogWrapper.Log("[StateMachine] Message received. Type: " + nameof(StartGameMessage));
-            await Task.Delay(1000);
             ChangeState<MainMenuState>();
             _gameFlowMediator.Publish(new GameFinishedMessage());
         }

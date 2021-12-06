@@ -5,9 +5,9 @@ namespace UnityGame.GameLogic
 {
     public class AddItemsRequest : AbstractInventoryMessage
     {
-        public List<ItemDefinition> items = new List<ItemDefinition>();
+        public List<Item> items = new List<Item>();
 
-        public AddItemsRequest(List<ItemDefinition> items)
+        public AddItemsRequest(List<Item> items)
         {
             this.items = items;
         }

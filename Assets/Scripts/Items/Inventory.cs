@@ -6,19 +6,13 @@ namespace UnityGame.Items
     {
         private List<Item> _items = new List<Item>();
 
-        public List<ItemDefinition> GetDefinitions()
+        public List<Item> GetAll()
         {
-            List<ItemDefinition> definitions = new List<ItemDefinition>();
-            foreach(var item in _items)
-            {
-                definitions.Add(item.Definition);
-            }
-            return definitions;
+            return _items;
         }
 
-        public void Add(ItemDefinition definition)
+        public void Add(Item item)
         {
-            Item item = new Item(definition);
             _items.Add(item);
         }
 

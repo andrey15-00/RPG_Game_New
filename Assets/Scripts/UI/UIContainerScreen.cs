@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityGame.GameLogic;
@@ -13,29 +12,28 @@ namespace UnityGame.UI
     {
         [SerializeField] UIInventorySlot _slotPrefab;
         [SerializeField] Transform _slotsParent;
-        [SerializeField] Container _container;//TODO: tmp. test
+        [SerializeField] Button _exit;
         private List<UIInventorySlot> _slots = new List<UIInventorySlot>();
         private IMediator<AbstractInventoryMessage> _inventoryMediator;
+        private Container _container;
 
-        private void Start()
-        {
-        }
 
         public void Init(Container container)
         {
+            _container = container;
             Clear();
             SpawnSlots(container.items);
         }
 
         [Inject]
-        private void Init(IMediator<AbstractInventoryMessage> inventoryMediator)
+        private void Constructor(IMediator<AbstractInventoryMessage> inventoryMediator)
         {
             _inventoryMediator = inventoryMediator;
-            Init(_container);
         }
 
         protected override void InitInternal()
         {
+            _exit.onClick.AddListener(OnExitClicked);
         }
 
         private void Clear()
@@ -47,22 +45,30 @@ namespace UnityGame.UI
             _slots.Clear();
         }
 
-        private void SpawnSlots(List<ItemDefinition> definitions)
+        private void SpawnSlots(List<Item> items)
         {
-            foreach(var def in definitions)
+            foreach(var item in items)
             {
                 UIInventorySlot slot = Instantiate(_slotPrefab, _slotsParent);
-                slot.Init(def, OnSlotClicked);
+                slot.Init(item, OnSlotClicked);
                 _slots.Add(slot);
             }
         }
 
         private void OnSlotClicked(UIInventorySlot slot)
         {
-            _inventoryMediator.Publish(new AddItemsRequest(new List<ItemDefinition>() { slot.ItemDefinition }));
+            _inventoryMediator.Publish(new AddItemsRequest(new List<Item>() { slot.Item }));
 
             _slots.Remove(slot);
+
+            _container.items.Remove(slot.Item);
+            
             Destroy(slot.gameObject);
+        }
+
+        private void OnExitClicked()
+        {
+            _container.StopInteract();
         }
     }
 }
