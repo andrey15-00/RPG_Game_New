@@ -30,6 +30,7 @@ namespace UnityGame.GameLogic
                 for(int a=0; a < _itemsToSpawnInEachContainer; ++a)
                 {
                     ItemDefinition definition = _itemFactory.GetRandomItem();
+                    definition.id = UnityEngine.Random.Range(1, 9999999).ToString(); 
                     items.Add(new Item(definition));
                 }
                 container.items = items;

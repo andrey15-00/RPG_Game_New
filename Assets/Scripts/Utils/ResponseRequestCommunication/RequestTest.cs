@@ -2,19 +2,29 @@
 {
     public class RequestTest
     {
-        private class RequestProcessor : IRequestProcessor<int, string>
+        private class RequestProcessor : IRequestProcessor<TestRequest, string>
         {
-            public string Handle(int input)
+            public string Handle(TestRequest input)
             {
-                return "Success with input " + input;
+                return "Success with input " + input.value;
+            }
+        }
+
+        public class TestRequest
+        {
+            public int value;
+
+            public TestRequest(int v)
+            {
+                this.value = v;
             }
         }
 
         public void Test()
         {
-            IRequestProcessor<int, string> processor = new RequestProcessor();
-            RequestCaller<int, string> handler = new RequestCaller<int, string>(processor);
-            string result = handler.Call(5);
+            IRequestProcessor<TestRequest, string> processor = new RequestProcessor();
+            RequestCaller<TestRequest, string> handler = new RequestCaller<TestRequest, string>(processor);
+            string result = handler.Call(new TestRequest(5));
             LogWrapper.Log("Request processed. Result: " + result);
         }
     }

@@ -55,11 +55,15 @@ public class Installer : MonoInstaller
 
     private void InitInventorySystem()
     {
-        IRequestCaller<int, List<Item>> getItemsCaller = new RequestCaller<int, List<Item>>(_inventorySystem);
-        IRequestCaller<Item, bool> addItemCaller = new RequestCaller<Item, bool>(_inventorySystem);
+        IRequestCaller<GetItemsRequest, List<Item>> getItemsCaller = new RequestCaller<GetItemsRequest, List<Item>>(_inventorySystem);
+        IRequestCaller<AddItemRequest, bool> addItemCaller = new RequestCaller<AddItemRequest, bool>(_inventorySystem);
+        IRequestCaller<RemoveItemRequest, bool> removeItemCaller = new RequestCaller<RemoveItemRequest, bool>(_inventorySystem);
 
-        Container.Bind<IRequestCaller<int, List<Item>>>().FromInstance(getItemsCaller).AsSingle();
-        Container.Bind<IRequestCaller<Item, bool>>().FromInstance(addItemCaller).AsSingle();
+        Container.Bind<IRequestCaller<GetItemsRequest, List<Item>>>().FromInstance(getItemsCaller).AsSingle();
+        Container.Bind<IRequestCaller<AddItemRequest, bool>>().FromInstance(addItemCaller).AsSingle();
+        Container.Bind<IRequestCaller<RemoveItemRequest, bool>>().FromInstance(removeItemCaller).AsSingle();
+
+        Container.Bind<IMediator<InventoryUpdated>>().FromInstance(new Mediator<InventoryUpdated>()).AsSingle();
     }
 
     public DiContainer GetContainer()

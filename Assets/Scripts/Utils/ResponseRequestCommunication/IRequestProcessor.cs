@@ -1,7 +1,7 @@
 ﻿namespace UnityGame.ResponseRequestCommunication
 {
-    public interface IRequestProcessor<RequestType, ReturnType>
+    public interface IRequestProcessor<RequestType, ReturnType> where RequestType: class
     {
-        ReturnType Handle(RequestType input);
+        ReturnType Handle(RequestType request);
     }
 }

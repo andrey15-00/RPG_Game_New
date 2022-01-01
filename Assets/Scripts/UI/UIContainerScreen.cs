@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityGame.GameLogic;
@@ -12,24 +13,37 @@ namespace UnityGame.UI
     public class UIContainerScreen : UIAbstractScreen
     {
         [SerializeField] UIInventorySlot _slotPrefab;
-        [SerializeField] Transform _slotsParent;
+        [SerializeField] Transform _containerSlotsParent;
+        [SerializeField] Transform _inventorySlotsParent;
         [SerializeField] Button _exit;
-        private List<UIInventorySlot> _slots = new List<UIInventorySlot>();
-        private IRequestCaller<Item, bool> _addItemCaller;
+        private List<UIInventorySlot> _containerSlots = new List<UIInventorySlot>();
+        private List<UIInventorySlot> _inventorySlots = new List<UIInventorySlot>();
+        private IRequestCaller<AddItemRequest, bool> _addItemCaller;
+        private IRequestCaller<GetItemsRequest, List<Item>> _getItemsCaller;
+        private IRequestCaller<RemoveItemRequest, bool> _removeItemCaller;
         private Container _container;
 
 
         public void Init(Container container)
         {
             _container = container;
+
+            List<Item> inventoryItems = _getItemsCaller.Call(new GetItemsRequest());
+
             Clear();
-            SpawnSlots(container.items);
+            _containerSlots = SpawnSlots(container.items, _containerSlotsParent, OnContainerSlotClicked);
+            _inventorySlots = SpawnSlots(inventoryItems, _inventorySlotsParent, OnInventorySlotClicked);
         }
 
         [Inject]
-        private void Constructor(IRequestCaller<Item, bool> addItemCaller)
+        private void Constructor(IRequestCaller<AddItemRequest, bool> addItemCaller, 
+            IRequestCaller<GetItemsRequest, List<Item>> getItemsCaller,
+            IRequestCaller<RemoveItemRequest, bool> removeItemCaller
+            )
         {
+            _getItemsCaller = getItemsCaller;
             _addItemCaller = addItemCaller;
+            _removeItemCaller = removeItemCaller;
         }
 
         protected override void InitInternal()
@@ -39,34 +53,55 @@ namespace UnityGame.UI
 
         private void Clear()
         {
-            foreach(var slot in _slots)
+            foreach(var slot in _containerSlots)
             {
                 Destroy(slot.gameObject);
             }
-            _slots.Clear();
+            _containerSlots.Clear();
+
+            foreach (var slot in _inventorySlots)
+            {
+                Destroy(slot.gameObject);
+            }
+            _containerSlots.Clear();
         }
 
-        private void SpawnSlots(List<Item> items)
+        private List<UIInventorySlot> SpawnSlots(List<Item> items, Transform parent, Action<UIInventorySlot> action)
         {
+            List<UIInventorySlot> result = new List<UIInventorySlot>();
             foreach(var item in items)
             {
-                UIInventorySlot slot = Instantiate(_slotPrefab, _slotsParent);
-                slot.Init(item, OnSlotClicked);
-                _slots.Add(slot);
+                UIInventorySlot slot = Instantiate(_slotPrefab, parent);
+                slot.Init(item);
+                slot.SetClickEvent(action);
+                result.Add(slot);
             }
+            return result;
         }
 
-        private void OnSlotClicked(UIInventorySlot slot)
+        private void OnContainerSlotClicked(UIInventorySlot slot)
         {
-            bool success = _addItemCaller.Call(slot.Item);
+            AddItemRequest request = new AddItemRequest(slot.Item);
+            bool success = _addItemCaller.Call(request);
 
             if (success)
             {
-                _slots.Remove(slot);
-
+                slot.SetClickEvent(OnInventorySlotClicked);
                 _container.items.Remove(slot.Item);
+                slot.transform.SetParent(_inventorySlotsParent);
+            }
+        }
 
-                Destroy(slot.gameObject);
+        private void OnInventorySlotClicked(UIInventorySlot slot)
+        {
+            RemoveItemRequest request = new RemoveItemRequest(slot.Item);
+            bool success = _removeItemCaller.Call(request);
+
+            if (success)
+            {
+                slot.SetClickEvent(OnContainerSlotClicked);
+                _container.items.Add(slot.Item);
+                slot.transform.SetParent(_containerSlotsParent);
             }
         }
 

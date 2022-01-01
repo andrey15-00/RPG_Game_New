@@ -15,10 +15,9 @@ namespace UnityGame.UI
 
         public Item Item { get; private set; }
 
-        public void Init(Item item, Action<UIInventorySlot> clicked = null)
+        public void Init(Item item)
         {
             Item = item;
-            _clicked = clicked;
             
             _icon.sprite = item.Definition.icon;
             _name.text = item.Definition.name;
@@ -27,6 +26,11 @@ namespace UnityGame.UI
         public void OnPointerClick(PointerEventData eventData)
         {
             _clicked?.Invoke(this);
+        }
+
+        public void SetClickEvent(Action<UIInventorySlot> clicked)
+        {
+            _clicked = clicked;
         }
     }
 }

@@ -17,9 +17,9 @@ namespace UnityGame.UI
         [SerializeField] Button _close;
         [SerializeField] Button _equip;
         private List<UIInventorySlot> _slots = new List<UIInventorySlot>();
-        private IRequestCaller<int, List<Item>> _getItemsCaller;
-        private IRequestCaller<Item, bool> _addItemCaller;
-        private Mediator<InventoryUpdated> _mediator;
+        private IRequestCaller<GetItemsRequest, List<Item>> _getItemsCaller;
+        private IRequestCaller<AddItemRequest, bool> _addItemCaller;
+        private IMediator<InventoryUpdated> _mediator;
 
         protected override void InitInternal()
         {
@@ -35,16 +35,16 @@ namespace UnityGame.UI
 
         private void Refresh()
         {
-            List<Item> items = _getItemsCaller.Call(0);
+            List<Item> items = _getItemsCaller.Call(new GetItemsRequest());
             LogWrapper.Log("[InventoryScreen] Received inventory items. Count: " + items.Count);
             Clear();
             SpawnSlots(items);
         }
 
         [Inject]
-        private void Constructor(IRequestCaller<int, List<Item>> getItemsCaller,
-            IRequestCaller<Item, bool> addItemCaller,
-            Mediator<InventoryUpdated> mediator)
+        private void Constructor(IRequestCaller<GetItemsRequest, List<Item>> getItemsCaller,
+            IRequestCaller<AddItemRequest, bool> addItemCaller,
+            IMediator<InventoryUpdated> mediator)
         {
             _getItemsCaller = getItemsCaller;
             _addItemCaller = addItemCaller;
@@ -63,7 +63,9 @@ namespace UnityGame.UI
         private void OnEquipClicked()
         {
             //TODO:
-            _addItemCaller.Call(new Item(new ItemDefinition() { name = "item la" }));
+            Item item = new Item(new ItemDefinition() { name = "item la" });
+            AddItemRequest request = new AddItemRequest(item);
+            _addItemCaller.Call(request);
         }
 
         private void Clear()

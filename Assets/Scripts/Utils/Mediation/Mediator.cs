@@ -5,7 +5,7 @@ using System.Reflection;
 using UnityEngine;
 using UnityGame.Mediation;
 
-namespace UnityGame.GameLogic
+namespace UnityGame.Mediation
 {
     public class Mediator<T> : IMediator<T> where T : IMediatorMessage
     {

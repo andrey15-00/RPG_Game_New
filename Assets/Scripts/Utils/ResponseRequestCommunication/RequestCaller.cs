@@ -1,6 +1,6 @@
 ﻿namespace UnityGame.ResponseRequestCommunication
 {
-    public class RequestCaller<T, V> : IRequestCaller<T, V>
+    public class RequestCaller<T, V> : IRequestCaller<T, V> where T: class
     {
         private IRequestProcessor<T, V> _processor;
 
