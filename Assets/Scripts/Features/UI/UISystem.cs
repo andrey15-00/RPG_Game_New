@@ -10,33 +10,53 @@ namespace UnityGame.UI
         [SerializeField] private ScreenList _screenPrefabs; 
         [SerializeField] private Transform _screensParent; 
         private Dictionary<Type, UIAbstractScreen> _spawnedScreens = new Dictionary<Type, UIAbstractScreen>();
-        private UIAbstractScreen _currentScreen;
 
-        public T ChangeScreen<T>() where T: UIAbstractScreen
+        public void HideScreen<T>() where T : UIAbstractScreen
         {
-            if(_currentScreen != null)
-            {
-                _currentScreen.Hide();
-            }
-
             Type type = typeof(T);
             if (_spawnedScreens.ContainsKey(type))
             {
-                _currentScreen = GetScreen<T>();
+                T screen = GetScreen<T>();
+                screen.Hide();
+                LogWrapper.Log("[UISystem] Hide screen. Type: " + type);
+            }
+        }
+
+        public void ShowScreen<T>() where T: UIAbstractScreen
+        {
+            T screen;
+            Type type = typeof(T);
+            if (_spawnedScreens.ContainsKey(type))
+            {
+                screen = GetScreen<T>();
             }
             else
             {
-                _currentScreen = CreateScreen<T>();
-                _spawnedScreens[type] = _currentScreen;
+                screen = CreateScreen<T>();
+                _spawnedScreens[type] = screen;
             }
-            _currentScreen.Show();
+            screen.Show();
 
             LogWrapper.Log("[UISystem] Shown screen. Type: " + type);
-
-            return _currentScreen as T;
         }
 
-        private T GetScreen<T>() where T : UIAbstractScreen
+        internal void LoadScreen<T>() where T : UIAbstractScreen
+        {
+            T screen;
+            Type type = typeof(T);
+            if (_spawnedScreens.ContainsKey(type))
+            {
+                screen = GetScreen<T>();
+            }
+            else
+            {
+                screen = CreateScreen<T>();
+                _spawnedScreens[type] = screen;
+            }
+            screen.Hide();
+        }
+
+        internal T GetScreen<T>() where T : UIAbstractScreen
         {
             Type type = typeof(T);
             return _spawnedScreens[type] as T;

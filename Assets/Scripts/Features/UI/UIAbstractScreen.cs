@@ -29,6 +29,7 @@ namespace UnityGame.UI
         public virtual void Show()
         {
             _visual.gameObject.SetActive(true);
+            _visual.transform.SetAsLastSibling();
         }
 
         public void Hide()

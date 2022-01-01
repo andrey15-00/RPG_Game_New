@@ -21,7 +21,7 @@ namespace Assets.Scripts
         {
             LogWrapper.Log("[BootLoader] Started init.");
 
-            uISystem.ChangeScreen<UILoadingScreen>();
+            uISystem.ShowScreen<UILoadingScreen>();
 
             stateMachine.Init(new List<IState>()
             {
@@ -30,7 +30,9 @@ namespace Assets.Scripts
                 new GameplayState(levelInitializer, interactablesSearcher),
             }, nameof(LoadingState));
 
-            uISystem.ChangeScreen<UIMainScreen>();
+            uISystem.ShowScreen<UIMainScreen>();
+
+            uISystem.LoadScreen<UIInventoryScreen>();
 
             LogWrapper.Log("[BootLoader] Finished init.");
         }

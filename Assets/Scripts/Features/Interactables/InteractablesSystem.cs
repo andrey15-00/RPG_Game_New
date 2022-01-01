@@ -22,13 +22,14 @@ namespace UnityGame.GameLogic
 
         private void OnInteractStarted(Container container)
         {
-            UIContainerScreen screen = _uiSystem.ChangeScreen<UIContainerScreen>();
+            UIContainerScreen screen = _uiSystem.GetScreen<UIContainerScreen>();
             screen.Init(container);
+            screen.Show();
         }
 
         private void OnInteractFinished(Container container)
         {
-            _uiSystem.ChangeScreen<UIGameplayScreen>();
+            _uiSystem.ShowScreen<UIGameplayScreen>();
         }
     }
 }

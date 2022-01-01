@@ -32,18 +32,20 @@ namespace UnityGame.UI
 
         public void Handle(GameStartedMessage message)
         {
-            _uiSystem.ChangeScreen<UIGameplayScreen>();
+            _uiSystem.HideScreen<UILoadingScreen>();
+            _uiSystem.ShowScreen<UIGameplayScreen>();
+            Hide();
         }
 
         private void OnPlayClicked()
         {
-            _uiSystem.ChangeScreen<UILoadingScreen>();
+            _uiSystem.ShowScreen<UILoadingScreen>();
             _gameFlowMediator.Publish(new StartGameMessage());
         }
 
         private void OnOpenInventoryClicked()
         {
-            _uiSystem.ChangeScreen<UIInventoryScreen>();
+            _uiSystem.ShowScreen<UIInventoryScreen>();
         }
     }
 }

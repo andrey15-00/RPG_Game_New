@@ -28,13 +28,15 @@ namespace UnityGame.UI
         private void OnGoToMainClicked()
         {
             LogWrapper.Log("[UIGameplayScreen] OnGoToMainClicked. ");
-            _uiSystem.ChangeScreen<UILoadingScreen>();
+            _uiSystem.ShowScreen<UILoadingScreen>();
             _gameFlowMediator.Publish(new FinishGameMessage());
         }
 
         public void Handle(GameFinishedMessage message)
         {
-            _uiSystem.ChangeScreen<UIMainScreen>();
+            _uiSystem.HideScreen<UILoadingScreen>();
+            Hide();
+            _uiSystem.ShowScreen<UIMainScreen>();
         }
     }
 }

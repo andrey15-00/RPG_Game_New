@@ -19,6 +19,7 @@ namespace UnityGame.UI
         private List<UIInventorySlot> _slots = new List<UIInventorySlot>();
         private IRequestCaller<GetItemsRequest, List<Item>> _getItemsCaller;
         private IRequestCaller<AddItemRequest, bool> _addItemCaller;
+        private InputSystem _inputSystem;
 
         protected override void InitInternal()
         {
@@ -42,25 +43,30 @@ namespace UnityGame.UI
 
         [Inject]
         private void Constructor(IRequestCaller<GetItemsRequest, List<Item>> getItemsCaller,
-            IRequestCaller<AddItemRequest, bool> addItemCaller)
+            IRequestCaller<AddItemRequest, bool> addItemCaller, InputSystem inputSystem)
         {
             _getItemsCaller = getItemsCaller;
             _addItemCaller = addItemCaller;
+            _inputSystem = inputSystem;
+
+            _inputSystem.OpenInventory += OnNeedOpen;
 
             LogWrapper.Log("[InventoryScreen] Constructor called!");
         }
 
+        private void OnNeedOpen()
+        {
+            Show();
+        }
+
         private void OnCloseClicked()
         {
-            _uiSystem.ChangeScreen<UIMainScreen>();
+            Hide();
         }
 
         private void OnEquipClicked()
         {
             //TODO:
-            Item item = new Item(new ItemDefinition() { name = "item la" });
-            AddItemRequest request = new AddItemRequest(item);
-            _addItemCaller.Call(request);
         }
 
         private void Clear()
