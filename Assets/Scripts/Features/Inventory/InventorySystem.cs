@@ -14,20 +14,6 @@ namespace UnityGame.GameLogic
         IRequestProcessor<RemoveItemRequest, bool>
     {
         private Inventory _playerInventory = new Inventory();
-        private IMediator<InventoryUpdated> _mediator;
-
-
-        [Inject]
-        private void Constructor(IMediator<InventoryUpdated> mediator)
-        {
-            _mediator = mediator;
-
-            LogWrapper.Log("[InventorySystem] Constructor called!");
-            //TODO: load inventory from elsewhere.
-            _playerInventory.Add(new Item(new ItemDefinition() { name = "FakeItem 1", id = "1" }));
-            _playerInventory.Add(new Item(new ItemDefinition() { name = "FakeItem 2", id = "2" }));
-            _playerInventory.Add(new Item(new ItemDefinition() { name = "FakeItem 3", id = "3" }));
-        }
 
         /// <summary>
         /// Get items from player's inventory.
@@ -43,7 +29,6 @@ namespace UnityGame.GameLogic
         public bool Handle(AddItemRequest request)
         {
             _playerInventory.Add(request.item);
-            _mediator.Publish(new InventoryUpdated());
             return true;
         }
 

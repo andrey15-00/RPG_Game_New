@@ -62,8 +62,6 @@ public class Installer : MonoInstaller
         Container.Bind<IRequestCaller<GetItemsRequest, List<Item>>>().FromInstance(getItemsCaller).AsSingle();
         Container.Bind<IRequestCaller<AddItemRequest, bool>>().FromInstance(addItemCaller).AsSingle();
         Container.Bind<IRequestCaller<RemoveItemRequest, bool>>().FromInstance(removeItemCaller).AsSingle();
-
-        Container.Bind<IMediator<InventoryUpdated>>().FromInstance(new Mediator<InventoryUpdated>()).AsSingle();
     }
 
     public DiContainer GetContainer()

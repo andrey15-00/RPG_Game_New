@@ -10,7 +10,7 @@ using Zenject;
 
 namespace UnityGame.UI
 {
-    public class UIInventoryScreen : UIAbstractScreen, IMediatorMessageHandler<InventoryUpdated>
+    public class UIInventoryScreen : UIAbstractScreen
     {
         [SerializeField] UIInventorySlot _slotPrefab;
         [SerializeField] Transform _slotsParent;
@@ -19,7 +19,6 @@ namespace UnityGame.UI
         private List<UIInventorySlot> _slots = new List<UIInventorySlot>();
         private IRequestCaller<GetItemsRequest, List<Item>> _getItemsCaller;
         private IRequestCaller<AddItemRequest, bool> _addItemCaller;
-        private IMediator<InventoryUpdated> _mediator;
 
         protected override void InitInternal()
         {
@@ -43,14 +42,10 @@ namespace UnityGame.UI
 
         [Inject]
         private void Constructor(IRequestCaller<GetItemsRequest, List<Item>> getItemsCaller,
-            IRequestCaller<AddItemRequest, bool> addItemCaller,
-            IMediator<InventoryUpdated> mediator)
+            IRequestCaller<AddItemRequest, bool> addItemCaller)
         {
             _getItemsCaller = getItemsCaller;
             _addItemCaller = addItemCaller;
-            _mediator = mediator;
-
-            _mediator.SubscribeHandler<UIInventoryScreen, InventoryUpdated>(this);
 
             LogWrapper.Log("[InventoryScreen] Constructor called!");
         }
@@ -85,11 +80,6 @@ namespace UnityGame.UI
                 slot.Init(item);
                 _slots.Add(slot);
             }
-        }
-
-        public void Handle(InventoryUpdated message)
-        {
-            Refresh();
         }
     }
 }
