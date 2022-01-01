@@ -58,8 +58,17 @@ namespace UnityGame.UI
 
         internal T GetScreen<T>() where T : UIAbstractScreen
         {
+            T screen;
             Type type = typeof(T);
-            return _spawnedScreens[type] as T;
+            if (_spawnedScreens.ContainsKey(type))
+            {
+                screen = GetScreen<T>();
+            }
+            else
+            {
+                screen = CreateScreen<T>();
+            }
+            return screen as T;
         }
 
         [Inject] private Installer _installer;

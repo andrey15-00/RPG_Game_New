@@ -13,6 +13,8 @@ namespace UnityGame.GameLogic
 
         public event Action OpenInventory;
 
+        public Vector2 MoveInput { get; private set; }
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.A))// && !Interacting)
@@ -31,6 +33,10 @@ namespace UnityGame.GameLogic
             {
                 OpenInventory?.Invoke();
             }
+
+            float x = Input.GetAxis("Horizontal");
+            float y = Input.GetAxis("Vertical");
+            MoveInput = new Vector2(x, y);
         }
     }
 }
