@@ -2,7 +2,7 @@
 
 namespace UnityGame.GameLogic
 {
-    public abstract class AbstractInventoryMessage : IMediatorMessage
+    public class InventoryUpdated : IMediatorMessage
     {
         
     }

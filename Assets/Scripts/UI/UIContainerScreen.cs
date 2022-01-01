@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityGame.GameLogic;
 using UnityGame.Items;
 using UnityGame.Mediation;
+using UnityGame.ResponseRequestCommunication;
 using Zenject;
 
 namespace UnityGame.UI
@@ -14,7 +15,7 @@ namespace UnityGame.UI
         [SerializeField] Transform _slotsParent;
         [SerializeField] Button _exit;
         private List<UIInventorySlot> _slots = new List<UIInventorySlot>();
-        private IMediator<AbstractInventoryMessage> _inventoryMediator;
+        private IRequestCaller<Item, bool> _addItemCaller;
         private Container _container;
 
 
@@ -26,9 +27,9 @@ namespace UnityGame.UI
         }
 
         [Inject]
-        private void Constructor(IMediator<AbstractInventoryMessage> inventoryMediator)
+        private void Constructor(IRequestCaller<Item, bool> addItemCaller)
         {
-            _inventoryMediator = inventoryMediator;
+            _addItemCaller = addItemCaller;
         }
 
         protected override void InitInternal()
@@ -57,13 +58,16 @@ namespace UnityGame.UI
 
         private void OnSlotClicked(UIInventorySlot slot)
         {
-            _inventoryMediator.Publish(new AddItemsRequest(new List<Item>() { slot.Item }));
+            bool success = _addItemCaller.Call(slot.Item);
 
-            _slots.Remove(slot);
+            if (success)
+            {
+                _slots.Remove(slot);
 
-            _container.items.Remove(slot.Item);
-            
-            Destroy(slot.gameObject);
+                _container.items.Remove(slot.Item);
+
+                Destroy(slot.gameObject);
+            }
         }
 
         private void OnExitClicked()

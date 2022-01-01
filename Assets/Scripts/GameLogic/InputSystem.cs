@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Zenject;
 
@@ -9,6 +10,8 @@ namespace UnityGame.GameLogic
         private IInteractable _currentInteractable;
 
         private bool Interacting => _currentInteractable != null;
+
+        public event Action OpenInventory;
 
         private void Update()
         {
@@ -22,6 +25,11 @@ namespace UnityGame.GameLogic
             {
                 _currentInteractable.StopInteract();
                 _currentInteractable = null;
+            }
+
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                OpenInventory?.Invoke();
             }
         }
     }

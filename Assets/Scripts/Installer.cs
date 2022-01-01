@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityGame.GameLogic;
 using UnityGame.Items;
 using UnityGame.Mediation;
+using UnityGame.ResponseRequestCommunication;
 using UnityGame.Spawning;
 using UnityGame.States;
 using UnityGame.UI;
@@ -18,18 +20,18 @@ public class Installer : MonoInstaller
     [SerializeField] private InteractablesSearcher _interactablesSearcher;
     [SerializeField] private InteractablesSystem _interactablesSystem;
     [SerializeField] private InputSystem _inputSystem;
+    [SerializeField] private InventorySystem _inventorySystem;
 
     public override void InstallBindings()
     {
         // Container.BindInterfacesAndSelfTo<GameFlowMediator>().AsSingle();
 
-        Container.Bind<IMediator<AbstractGameFlowMessage>>().FromInstance(new GameFlowMediator()).AsCached();
+       // Container.Bind<IMediator<AbstractGameFlowMessage>>().FromInstance(new GameFlowMediator()).AsCached();
+        Container.Bind<IMediator<AbstractGameFlowMessage>>().FromInstance(new Mediator<AbstractGameFlowMessage>()).AsCached();
 
         Container.Bind<UISystem>().FromInstance(_uiSystem).AsSingle();
 
         Container.Bind<StateMachine>().FromInstance(_stateMachine).AsSingle();
-
-        Container.Bind<IMediator<AbstractInventoryMessage>>().FromInstance(new InventoryMediator()).AsSingle();
 
         Container.Bind<ItemList>().FromInstance(_itemList).AsSingle();
 
@@ -46,6 +48,18 @@ public class Installer : MonoInstaller
         Container.Bind<InputSystem>().FromInstance(_inputSystem).AsSingle();
 
         Container.Bind<Installer>().FromInstance(this).AsSingle();
+
+
+        InitInventorySystem();
+    }
+
+    private void InitInventorySystem()
+    {
+        IRequestCaller<int, List<Item>> getItemsCaller = new RequestCaller<int, List<Item>>(_inventorySystem);
+        IRequestCaller<Item, bool> addItemCaller = new RequestCaller<Item, bool>(_inventorySystem);
+
+        Container.Bind<IRequestCaller<int, List<Item>>>().FromInstance(getItemsCaller).AsSingle();
+        Container.Bind<IRequestCaller<Item, bool>>().FromInstance(addItemCaller).AsSingle();
     }
 
     public DiContainer GetContainer()

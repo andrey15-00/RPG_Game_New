@@ -5,26 +5,21 @@ using UnityEngine.UI;
 using UnityGame.GameLogic;
 using UnityGame.Items;
 using UnityGame.Mediation;
+using UnityGame.ResponseRequestCommunication;
 using Zenject;
 
 namespace UnityGame.UI
 {
-    public class UIInventoryScreen : UIAbstractScreen, IMediatorMessageHandler<GetItemsResponse>
+    public class UIInventoryScreen : UIAbstractScreen, IMediatorMessageHandler<InventoryUpdated>
     {
         [SerializeField] UIInventorySlot _slotPrefab;
         [SerializeField] Transform _slotsParent;
         [SerializeField] Button _close;
         [SerializeField] Button _equip;
-        private IMediator<AbstractInventoryMessage> _inventoryMediator;
         private List<UIInventorySlot> _slots = new List<UIInventorySlot>();
-
-        public void Handle(GetItemsResponse message)
-        {
-            LogWrapper.Log("Received inventory items. Count: " + message.items.Count);
-            Clear();
-            SpawnSlots(message.items);
-            base.Show();
-        }
+        private IRequestCaller<int, List<Item>> _getItemsCaller;
+        private IRequestCaller<Item, bool> _addItemCaller;
+        private Mediator<InventoryUpdated> _mediator;
 
         protected override void InitInternal()
         {
@@ -32,23 +27,32 @@ namespace UnityGame.UI
             _equip.onClick.AddListener(OnEquipClicked);
         }
 
-        public async override void Show()
+        public override void Show()
         {
-            while (_inventoryMediator == null)
-            {
-                await Task.Yield();
-            }
+            Refresh();
+            base.Show();
+        }
 
-
-            _inventoryMediator.Publish(new GetItemsRequest());
+        private void Refresh()
+        {
+            List<Item> items = _getItemsCaller.Call(0);
+            LogWrapper.Log("[InventoryScreen] Received inventory items. Count: " + items.Count);
+            Clear();
+            SpawnSlots(items);
         }
 
         [Inject]
-        private void Constructor(IMediator<AbstractInventoryMessage> inventoryMediator)
+        private void Constructor(IRequestCaller<int, List<Item>> getItemsCaller,
+            IRequestCaller<Item, bool> addItemCaller,
+            Mediator<InventoryUpdated> mediator)
         {
-            inventoryMediator.SubscribeHandler<UIInventoryScreen, GetItemsResponse>(this);
+            _getItemsCaller = getItemsCaller;
+            _addItemCaller = addItemCaller;
+            _mediator = mediator;
 
-            _inventoryMediator = inventoryMediator;
+            _mediator.SubscribeHandler<UIInventoryScreen, InventoryUpdated>(this);
+
+            LogWrapper.Log("[InventoryScreen] Constructor called!");
         }
 
         private void OnCloseClicked()
@@ -58,7 +62,8 @@ namespace UnityGame.UI
 
         private void OnEquipClicked()
         {
-           //TODO:
+            //TODO:
+            _addItemCaller.Call(new Item(new ItemDefinition() { name = "item la" }));
         }
 
         private void Clear()
@@ -78,6 +83,11 @@ namespace UnityGame.UI
                 slot.Init(item);
                 _slots.Add(slot);
             }
+        }
+
+        public void Handle(InventoryUpdated message)
+        {
+            Refresh();
         }
     }
 }
